@@ -10,7 +10,7 @@ class Json
 {
 public:
     Json();
-     Json(JsonDataPtr data);
+    Json(JsonDataPtr data);
     ~Json();
     void parse( const string& jsonStr);
     string toString();
