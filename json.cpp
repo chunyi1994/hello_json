@@ -8,11 +8,9 @@ using std::stack;
 namespace json{
 
 Json::Json():root_(NULL){
-
 }
 
 Json::Json(JsonDataPtr data = NULL):root_(data){
-
 }
 
 Json::~Json(){
@@ -20,8 +18,7 @@ Json::~Json(){
 }
 
 Value Json::root(){
-    Value value;
-    value.setData(root_);
+    Value value(root_);
     return value;
 }
 
@@ -126,6 +123,7 @@ void Json::parse(const string& jsonStr){
                 dataStack.push(data);
             }
             break;
+            
         }case '}':
             assert(!dataStack.empty());
             assert(typeid(*(dataStack.top())) == typeid(ObjectData));
@@ -142,14 +140,12 @@ void Json::parse(const string& jsonStr){
             assert(pos2 != std::string::npos);
             if(exceptValue == EXCEPT_KEY){
                 key = jsonStr.substr(pos + 1, pos2 - (pos + 1));
-
                 pos2 = jsonStr.find(':', pos2 - 1);
                 assert(pos2 != std::string::npos);
                 exceptValue = EXCEPT_VALUE;
             }else if(exceptValue == EXCEPT_VALUE){
                 assert(!dataStack.empty());
                 string value =  jsonStr.substr(pos + 1, pos2 - (pos + 1));
-
                 data = new StringData(value);
                 addData(dataStack.top(), data, key);
                 exceptValue = EXCEPT_KEY;
@@ -157,12 +153,8 @@ void Json::parse(const string& jsonStr){
             pos = pos2;
             break;
         }
-
         pos++;
-
     }
-    //ObjectData* oData = dynamic_cast<ObjectData*>(root_);
-    //root_ = oData->getDataPtr("first");
 }
 
 string Json::toString(){

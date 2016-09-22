@@ -18,7 +18,7 @@ int main()
 
 void example1(){
     Json json;
-    //["name1", "name2", {"bool" : true, "num" : 23345}]
+    //["name1", "name2", {"name3","value2", "bool" : true, "num" : 23345}]
     json.parse("[\"name1\",\"name2\",{\"name3\":\"value2\", \"num\":23345, \"bool\":    true  }]");
     Value data =  json.root();
     Value name1 = data[0];  //name1
@@ -46,8 +46,11 @@ void example2(){
     Value objectValue = makeObjectValue();
     Value numValue = makeNumberValue(23345);
     Value boolValue = makeBoolValue(false);
+    Value stringValue4 = makeStringValue("value2");
     objectValue.addValue("num", numValue);
     objectValue.addValue("bool", boolValue);
+    objectValue.addValue("name3", stringValue4);
+
 
     arrayValue.addValue(stringValue1);
     arrayValue.addValue(stringValue2);

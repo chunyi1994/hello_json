@@ -23,8 +23,8 @@ public:
 
     }
 
-    void setData(JsonDataPtr data){
-        data_ = data;
+    Value(JsonDataPtr data):data_(data){
+
     }
 
     void addValue(Value value){
@@ -39,21 +39,17 @@ public:
         data->addItem(key, value.data_);
     }
 
-
-
     Value operator[](size_t n){
         assert(typeid(*data_) == typeid(ArrayData));
         ArrayData* data = dynamic_cast<ArrayData*>(data_);
-        Value value;
-        value.setData(data->at(n));
+        Value value(data->at(n));
         return value;
     }
 
     Value operator[](string key){
         assert(typeid(*data_) == typeid(ObjectData));
         ObjectData* data  = dynamic_cast< ObjectData*>(data_);
-        Value value;
-        value.setData(data->get(key));
+        Value value(data->get(key));
         return value;
     }
 
@@ -67,32 +63,27 @@ private:
 };
 
 static Value makeBoolValue(bool data){
-    Value value;
-    value.setData(new BoolData(data));
+    Value value(new BoolData(data));
     return value;
 }
 
 static Value makeStringValue(string data){
-    Value value;
-    value.setData(new StringData(data));
+    Value value(new StringData(data));
     return value;
 }
 
 static Value makeArrayValue(){
-    Value value;
-    value.setData(new ArrayData());
+    Value value(new ArrayData());
     return value;
 }
 
 static Value makeObjectValue(){
-    Value value;
-    value.setData(new ObjectData());
+    Value value(new ObjectData());
     return value;
 }
 
 static Value makeNumberValue(int data){
-    Value value;
-    value.setData(new NumberData(data));
+    Value value(new NumberData(data));
     return value;
 }
 }
