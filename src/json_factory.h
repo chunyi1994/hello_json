@@ -56,6 +56,7 @@ public:
 
                     assert(except_value == EXCEPT_VALUE);
                     if (except_value != EXCEPT_VALUE) {
+                        delete root;
                         return Json();
                     }
                     int start = pos;
@@ -81,6 +82,7 @@ public:
                 if (data_stack.empty()
                      ||   except_value != EXCEPT_VALUE
                      ||  !utils::cmp_nocase(json_str.substr(pos, 4), "true")) {
+                    delete root;
                     return Json();
                 }
                 data = JsonBool::create(true);
@@ -96,6 +98,7 @@ public:
                 if (data_stack.empty()
                      ||   except_value != EXCEPT_VALUE
                      ||  !utils::cmp_nocase(json_str.substr(pos, 5), "false")) {
+                    delete root;
                     return Json();
                 }
                 data = JsonBool::create(false);
@@ -127,6 +130,7 @@ public:
                 assert(typeid(*(data_stack.top())) == typeid(JsonObj));
                 if (data_stack.empty()
                      ||  typeid(*(data_stack.top())) != typeid(JsonObj)) {
+                    delete root;
                     return Json();
                 }
                 data_stack.pop();
@@ -137,6 +141,7 @@ public:
                 assert(typeid(*(data_stack.top())) == typeid(JsonArr));
                 if (data_stack.empty()
                      ||  typeid(*(data_stack.top())) != typeid(JsonArr)) {
+                    delete root;
                     return Json();
                 }
                 data_stack.pop();
@@ -151,25 +156,30 @@ public:
                 }
                 assert(pos2 != std::string::npos);
                 if (pos2 == std::string::npos) {
+                    delete root;
                     return Json();
                 }
                 if (except_value == EXCEPT_KEY){
                     key = json_str.substr(pos + 1, pos2 - (pos + 1));
                     pos2 = json_str.find(':', pos2 - 1);
                     if (pos2 == std::string::npos) {
+                        delete root;
                         return Json();
                     }
                     assert(pos2 != std::string::npos);
                     if (pos2 == std::string::npos) {
+                        delete root;
                         return Json();
                     }
                     except_value = EXCEPT_VALUE;
                 } else if(except_value == EXCEPT_VALUE){
                     if (data_stack.empty()) {
+                        delete root;
                         return Json();
                     }
                     assert(!data_stack.empty());
                     if (data_stack.empty()) {
+                        delete root;
                         return Json();
                     }
                     std::string value =  json_str.substr(pos + 1, pos2 - (pos + 1));
