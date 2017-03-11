@@ -2,9 +2,10 @@
 #include "json.h"
 #include "json_raii.h"
 #include "json_factory.h"
-
+#include "test/dotest.h"
 using namespace json;
 using namespace std;
+using namespace test;
 #include <utility>
 
 void example1() {
@@ -38,9 +39,13 @@ void example1() {
 int main()
 {
      example1();
+     do_test();
      std::cout<<"hello world"<<std::endl;
     return 0;
 }
+
+
+
 
 
 

@@ -14,6 +14,7 @@ class Json {
 public:
     Json();
     Json(int value);
+    Json(const Json& other);
     Json(const char* value);
     Json(std::string value);
     Json(bool value);

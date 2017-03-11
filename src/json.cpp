@@ -8,10 +8,34 @@ Json::Json() : value_(nullptr) {
 Json::Json(int value) : value_(JsonNum::create(value)){
 }
 
-Json::Json(const char *value) : value_(JsonStr::create(value)) {
+Json::Json(const Json &other) : value_(other.value_)
+{
+
 }
 
-Json::Json(std::string value)  : value_(JsonStr::create(value)) {
+Json::Json(const char *value) : value_(nullptr) {
+    std::string v(value);
+    std::string s;
+    for (auto item : v) {
+        if (item == '\"') {
+            //todo  应该支持更多转义
+            s = s + std::string(1,'\\');
+        }
+        s = s + std::string(1, item);
+    }
+    value_ = JsonStr::create(s);
+}
+
+Json::Json(std::string v)  : value_(nullptr) {
+    std::string s;
+    for (auto item : v) {
+        if (item == '\"') {
+            //todo  应该支持更多转义
+            s = s + std::string(1,'\\');
+        }
+        s = s + std::string(1, item);
+    }
+    value_ = JsonStr::create(s);
 }
 
 Json::Json(bool value): value_(JsonBool::create(value)) {
@@ -64,6 +88,7 @@ Json Json::operator[](const std::string &key) {
         JsonObj::Pointer obj = dynamic_cast<JsonObj::Pointer>(value_);
         if (obj->find(key)) {
             return Json(obj->get(key));
+        } else {
         }
     }
     return *this;
@@ -101,11 +126,13 @@ int Json::get_int() const {
 }
 
 std::string Json::get_str() const {
+    std::string result("");
     if (typeid(*(value_)) == typeid(JsonStr)) {
         JsonStr::Pointer str = dynamic_cast<JsonStr::Pointer>(value_);
-        return str->get_value();
+        const std::string& raw = str->get_value();
+        result = utils::replace_all(raw, "\\\"", "\"");
     }
-    return "";
+    return result;
 }
 
 bool Json::get_bool() const {

@@ -149,11 +149,15 @@ public:
                     except_value = EXCEPT_KEY;
                 }
                 break;
+            case '\\':
+                pos += 2;
+                break;
             case '\"':
-                size_t pos2 = json_str.find('\"', pos + 1);
-                if (pos2 == std::string::npos) {
-                    return Json();
-                }
+                size_t pos2 = pos;
+                do {
+                    pos2 = json_str.find('\"', pos2 + 1);
+                } while (pos2 != std::string::npos && json_str[pos2 - 1] == '\\');
+
                 assert(pos2 != std::string::npos);
                 if (pos2 == std::string::npos) {
                     delete root;

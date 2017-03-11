@@ -4,6 +4,10 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -Werror
+QMAKE_CXXFLAGS +=  -Wno-unused-parameter
+QMAKE_CXXFLAGS +=  -Wno-unused-function
+QMAKE_CXXFLAGS +=  -Wno-unused-variable
 
 SOURCES += main.cpp \
     json.cpp
@@ -20,5 +24,7 @@ HEADERS += \
     json_obj.h \
     json_arr.h \
     json_factory.h \
-    json_raii.h
+    json_raii.h \
+    test/dotest.h \
+    test/test.h
 
