@@ -1,6 +1,6 @@
-# cppjson
-
-# usage
+# hello json
+<p>你好json， 这是我在学习json语法的时候，顺带写的json解析器。目前不支持utf8的转义。</p>
+# 用法
 ```
 {"arrkey":[1, "nihao", true, 1.234, 5, 6, 7, 7], 
   "boolkey":true, 
