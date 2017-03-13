@@ -2,14 +2,20 @@
 #include "json_type.h"
 #include <iostream>
 #include <assert.h>
+#include "json_parser.h"
 namespace json {
 
 Json::Pointer make_json(Json json) {
     return std::make_shared<Json>(json);
 }
 
-Json::Pointer create_json_ptr(Json json) {
-    return std::make_shared<Json>(json);
+Json::Pointer parse_json(const std::string& jsonstr) {
+    Json json = create_json(jsonstr);
+    if (json.null()) {
+        return nullptr;
+    } else {
+        return make_json(json);
+    }
 }
 
 Json::Json() : value_(nullptr) {

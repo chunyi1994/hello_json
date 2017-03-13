@@ -23,7 +23,7 @@ HEADERS += \
     json_str.h \
     json_obj.h \
     json_arr.h \
-    json_factory.h \
     test/dotest.h \
-    test/test.h
+    test/test.h \
+    json_parser.h
 

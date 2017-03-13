@@ -79,9 +79,8 @@ private:
 };
 
 
-class JsonRaii;
 Json::Pointer make_json(Json json);
-
+Json::Pointer parse_json(const std::string& jsonstr);
 
 }//namespace
 

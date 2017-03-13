@@ -1,6 +1,5 @@
 #include <iostream>
 #include "json.h"
-#include "json_factory.h"
 #include "test/dotest.h"
 using namespace json;
 using namespace std;
@@ -21,7 +20,7 @@ void example1() {
     std::string str = root->to_string();
     std::cout<<str<<std::endl;
     //将str再解析回去成为数据结构
-    Json::Pointer jsonptr = JsonFactory::create(str);
+    Json::Pointer jsonptr = parse_json(str);
     if (!jsonptr) {
         std::cout<<"JsonFactory create error"<<std::endl;
         return;
@@ -52,8 +51,8 @@ void example1() {
 
 int main()
 {
-    //example1();
-    do_test();
+    example1();
+    //do_test();
     std::cout<<"hello world"<<std::endl;
     return 0;
 }
