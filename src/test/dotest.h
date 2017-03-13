@@ -1,6 +1,6 @@
 #include "test.h"
 #include "../json.h"
-#include "../json_factory.h"
+#include "../json_parser.h"
 #include "../utils.h"
 using namespace json;
 using namespace utils;
@@ -20,7 +20,7 @@ static void test1() {
     std::string str = root->to_string();
 
     //将str再解析回去成为数据结构
-    Json::Pointer jsonptr = JsonFactory::create(str);
+    Json::Pointer jsonptr = parse_json(str);
     Json::Pointer  strjson = jsonptr->get("strkey");
     EXCEPT_EQ("string!!!", strjson->get_str());
     Json::Pointer arrjson = jsonptr->get("arrkey");
