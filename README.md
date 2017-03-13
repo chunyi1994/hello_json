@@ -1,8 +1,18 @@
 # cppjson
-使用c++编写的json解析小程序
 
-这个小程序不仅可以解析json,还可以通过编写代码生成json
+# usage
+```
+{"arrkey":[1, "nihao", true, 1.234, 5, 6, 7, 7], "boolkey":true, "numkey":323, "objectkey":{"subobject1":234, "subobject2":"234"}, "strkey":"string!!!"}
+```
+<p>想要将以上json语句转换成c++的数据结构，只需要</p>
 
-所以有一个验证本程序是否可靠的方法,就是拿一个现成的json,放入程序解析, 再通过程序生成一个json,
+```
+ Json::Pointer root = make_json({ { Key("strkey"), "string!!!" },
+                                       { Key("numkey"), 323 },
+                                       { Key("boolkey"), true },
+                                       { Key("objectkey"), { {Key("subobject1"), 234},  {Key("subobject2"), "234"} } },
+                                       { Key("arrkey"), {1, "nihao" , true, 1.234, 5, 6, 7, 7}}
+                                   });
 
-如果两个json是一样的,说明程序是没有bug的.
+
+```
