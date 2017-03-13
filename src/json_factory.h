@@ -4,16 +4,17 @@
 #include <string>
 #include <assert.h>
 #include "json.h"
+#include "json_raii.h"
 #include <utility>
 namespace json{
 
 
 static void add_data(JsonBase::Pointer parent, JsonBase::Pointer data, std::string key){
-    if(typeid(*(parent)) == typeid(JsonObj)){
-        JsonObj::Pointer obj = dynamic_cast<JsonObj::Pointer>(parent);
+    if(typeid(*(parent.get())) == typeid(JsonObj)){
+        JsonObj* obj = dynamic_cast<JsonObj*>(parent.get());
         obj->add_item(key, data);
-    }else if(typeid(*(parent)) == typeid(JsonArr)){
-        JsonArr::Pointer arr = dynamic_cast<JsonArr::Pointer>(parent);
+    }else if(typeid(*(parent.get())) == typeid(JsonArr)){
+        JsonArr* arr = dynamic_cast< JsonArr*>(parent.get());
         arr->add_item(data);
     } else {
         //todo
@@ -30,7 +31,14 @@ static bool is_in_array_loop(JsonBase::Pointer parent){
 
 class JsonFactory {
 public:
-    static Json create(std::string json_str) {
+    //创建一个具有raii性质的json ptr
+    static Json::Pointer create(std::string json_str) {
+        return make_json(create_json(json_str));
+    }
+
+    //创建普通json
+private:
+    static Json create_json(std::string json_str) {
         const int EXCEPT_KEY  = 0;
         const int EXCEPT_VALUE = 1;
         std::stack<JsonBase::Pointer> data_stack;
@@ -56,7 +64,7 @@ public:
 
                     assert(except_value == EXCEPT_VALUE);
                     if (except_value != EXCEPT_VALUE) {
-                        delete root;
+                       // delete root;
                         return Json();
                     }
                     int start = pos;
@@ -65,7 +73,7 @@ public:
                         end++;
                     }
                     std::string val = json_str.substr(start, end - start);
-                    data = JsonNum::create(utils::to_int(val));
+                    data = JsonNum::create(utils::to_double(val));
                     add_data(data_stack.top(), data, key);
                     if (is_in_array_loop(data_stack.top())) {
                        // except_value = EXCEPT_VALUE;
@@ -82,7 +90,7 @@ public:
                 if (data_stack.empty()
                      ||   except_value != EXCEPT_VALUE
                      ||  !utils::cmp_nocase(json_str.substr(pos, 4), "true")) {
-                    delete root;
+                    //delete root;
                     return Json();
                 }
                 data = JsonBool::create(true);
@@ -98,7 +106,7 @@ public:
                 if (data_stack.empty()
                      ||   except_value != EXCEPT_VALUE
                      ||  !utils::cmp_nocase(json_str.substr(pos, 5), "false")) {
-                    delete root;
+                   // delete root;
                     return Json();
                 }
                 data = JsonBool::create(false);
@@ -130,7 +138,7 @@ public:
                 assert(typeid(*(data_stack.top())) == typeid(JsonObj));
                 if (data_stack.empty()
                      ||  typeid(*(data_stack.top())) != typeid(JsonObj)) {
-                    delete root;
+                    //delete root;
                     return Json();
                 }
                 data_stack.pop();
@@ -141,7 +149,7 @@ public:
                 assert(typeid(*(data_stack.top())) == typeid(JsonArr));
                 if (data_stack.empty()
                      ||  typeid(*(data_stack.top())) != typeid(JsonArr)) {
-                    delete root;
+                    //delete root;
                     return Json();
                 }
                 data_stack.pop();
@@ -160,30 +168,30 @@ public:
 
                 assert(pos2 != std::string::npos);
                 if (pos2 == std::string::npos) {
-                    delete root;
+                    //delete root;
                     return Json();
                 }
                 if (except_value == EXCEPT_KEY){
                     key = json_str.substr(pos + 1, pos2 - (pos + 1));
                     pos2 = json_str.find(':', pos2 - 1);
                     if (pos2 == std::string::npos) {
-                        delete root;
+                        //delete root;
                         return Json();
                     }
                     assert(pos2 != std::string::npos);
                     if (pos2 == std::string::npos) {
-                        delete root;
+                        //delete root;
                         return Json();
                     }
                     except_value = EXCEPT_VALUE;
                 } else if(except_value == EXCEPT_VALUE){
                     if (data_stack.empty()) {
-                        delete root;
+                       // delete root;
                         return Json();
                     }
                     assert(!data_stack.empty());
                     if (data_stack.empty()) {
-                        delete root;
+                        //delete root;
                         return Json();
                     }
                     std::string value =  json_str.substr(pos + 1, pos2 - (pos + 1));

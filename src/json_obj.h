@@ -12,30 +12,38 @@ namespace json {
 class JsonObj : public JsonBase {
 public:
     typedef std::map<std::string, JsonBase::Pointer> JsonObjMap;
-    typedef JsonObj* Pointer;
+    //typedef JsonObj* Pointer;
 public:
     JsonObj(JsonObjMap map) : values_(std::move(map)) {}
 
-     JsonObj() : values_() {}
+    JsonObj() : values_() {}
 
     virtual ~JsonObj() {
-        for (auto& pair : values_) {
-            delete pair.second;
-        }
     }
 
-     std::size_t size() const { return values_.size(); }
+    std::size_t size() const { return values_.size(); }
 
-     bool find(const std::string &key) { return values_.find(key) != values_.end(); }
+    bool find(const std::string &key) { return values_.find(key) != values_.end(); }
 
-     JsonBase::Pointer get(const std::string &key) { return values_[key]; }
+    JsonBase::Pointer get(const std::string &key) { return values_[key]; }
 
     void add_item(std::string key, JsonBase::Pointer value) { values_[key] = value; }
 
-    static Pointer create(JsonObjMap map) { return new JsonObj(std::move(map)); }
+    static JsonBase::Pointer create(JsonObjMap map) { return std::make_shared<JsonObj>(std::move(map)); }
 
-    static Pointer create() { return new JsonObj(); }
-    // std::string get_value() const { return value_; }
+    static JsonBase::Pointer create() {  return std::make_shared<JsonObj>(); }
+
+    virtual JsonBase::Pointer clone() const {
+        JsonObjMap values;
+        for (const auto& pair : values_) {
+            JsonBase::Pointer p = pair.second;
+            if (p) {
+                values[pair.first] = p->clone();
+            }
+        }
+        return create(std::move(values));
+    }
+
 
     virtual std::string to_string() {
         std::string ret = "{";

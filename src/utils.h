@@ -50,14 +50,16 @@ static bool cmp_nocase(const std::string& s, const std::string& s2) {
     std::string::const_iterator p = s.begin();
     std::string::const_iterator p2 = s2.begin();
     while (p!=s.end() && p2!=s2.end())  {
-         if (toupper(*p)!=toupper(*p2)) {
-             return false;
-         }
-         ++p;
-         ++p2;
-      }
-     return s2.size() == s.size();
+        if (toupper(*p)!=toupper(*p2)) {
+            return false;
+        }
+        ++p;
+        ++p2;
+    }
+    return s2.size() == s.size();
 }
+
+
 
 template <class T>
 static std::string to_str(const T& value) {
@@ -75,8 +77,17 @@ static int to_int(const T& value) {
     return result;
 }
 
+template <class T>
+static double to_double(const T& value) {
+    double result = 0;
+    std::stringstream ss;
+    ss << value;
+    ss >> result;
+    return result;
+}
+
 static bool is_digit_char(const char c){
-    if('0' <= c && c <= '9'){
+    if(('0' <= c && c <= '9') || c == '.'){
         return true;
     }
     return false;

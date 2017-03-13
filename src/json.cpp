@@ -1,41 +1,37 @@
 #include "json.h"
 #include "json_type.h"
+#include "json_raii.h"
+#include <iostream>
+#include <assert.h>
 namespace json {
+
+Json::Pointer make_json(Json json) {
+    return std::make_shared<JsonRaii>(json);
+}
+
+Json::Pointer create_json_ptr(Json json) {
+    return std::make_shared<Json>(json);
+}
 
 Json::Json() : value_(nullptr) {
 }
 
-Json::Json(int value) : value_(JsonNum::create(value)){
+Json::Json(float value): value_(JsonNum::create(value)) {
 }
 
-Json::Json(const Json &other) : value_(other.value_)
-{
-
+Json::Json(double value) : value_(JsonNum::create(value)) {
 }
 
-Json::Json(const char *value) : value_(nullptr) {
-    std::string v(value);
-    std::string s;
-    for (auto item : v) {
-        if (item == '\"') {
-            //todo  应该支持更多转义
-            s = s + std::string(1,'\\');
-        }
-        s = s + std::string(1, item);
-    }
-    value_ = JsonStr::create(s);
+Json::Json(int value): value_(JsonNum::create(static_cast<double>(value))) {
 }
 
-Json::Json(std::string v)  : value_(nullptr) {
-    std::string s;
-    for (auto item : v) {
-        if (item == '\"') {
-            //todo  应该支持更多转义
-            s = s + std::string(1,'\\');
-        }
-        s = s + std::string(1, item);
-    }
-    value_ = JsonStr::create(s);
+Json::Json(const Json &other) : value_(other.value_) {
+}
+
+Json::Json(const char *value) : value_(JsonStr::create(value)) {
+}
+
+Json::Json(std::string v)  : value_(JsonStr::create(v)) {
 }
 
 Json::Json(bool value): value_(JsonBool::create(value)) {
@@ -61,7 +57,7 @@ Json::Json(JsonBase::Pointer root): value_(root)
 {}
 
 std::string Json::to_string() const {
-    if (value_) {
+    if (null()) {
         return value_->to_string();
     } else {
         return "null";
@@ -69,75 +65,137 @@ std::string Json::to_string() const {
 }
 
 void Json::destory() {
-    delete value_;
     value_ = nullptr;
 }
 
-Json Json::operator[](std::size_t n) {
-    if (typeid(*(value_)) == typeid(JsonArr)) {
-        JsonArr::Pointer arr = dynamic_cast<JsonArr::Pointer>(value_);
+void Json::do_clone(Json::Pointer new_json) const {
+    new_json->value_ = value_->clone();
+}
+
+Json::Pointer Json::clone() const {
+    Pointer new_json = std::make_shared<Json>();
+    do_clone(new_json);
+    return new_json;
+}
+
+Json::Pointer Json::get(std::size_t n) {
+    assert(!null());
+    if (is_array()) {
+        JsonArr* arr = dynamic_cast<JsonArr*>(value_.get());
         if (n < arr->size()) {
-            return Json(arr->at(n));
+            return make_json(Json(arr->at(n)));
         }
     }
-    return *this;
+    return nullptr;
 }
-
-Json Json::operator[](const std::string &key) {
-    if (typeid(*(value_)) == typeid(JsonObj)) {
-        JsonObj::Pointer obj = dynamic_cast<JsonObj::Pointer>(value_);
-        if (obj->find(key)) {
-            return Json(obj->get(key));
-        } else {
-        }
-    }
-    return *this;
-}
-
-bool Json::size() const {
-    if (!value_) {
+int Json::add_item(JsonBase::Pointer value) {
+    assert(!null());
+    if (is_array()) {
+        JsonArr* arr = dynamic_cast<JsonArr*>(value_.get());
+        arr->add_item(value);
         return 0;
     }
-    if (typeid(*(value_)) == typeid(JsonObj)) {
-        JsonObj::Pointer obj = dynamic_cast<JsonObj::Pointer>(value_);
+    return -1;
+}
+
+int Json::add_item(Json json) {
+    return add_item(json.value_);
+}
+
+int Json::add_item(Json::Pointer json) {
+    return add_item(json->value_);
+}
+
+Json::Pointer Json::get(const std::string &key) {
+    assert(!null());
+    if (is_object()) {
+        JsonObj* obj = dynamic_cast<JsonObj*>(value_.get());
+        if (obj->find(key)) {
+            return make_json(Json(obj->get(key)));
+        }
+    }
+    return nullptr;
+}
+
+std::size_t Json::size() const {
+    assert(!null());
+    if (is_object()) {
+        JsonObj* obj = dynamic_cast<JsonObj*>(value_.get());
         return obj->size();
     }
-    if (typeid(*(value_)) == typeid(JsonArr)) {
-        JsonArr::Pointer arr = dynamic_cast<JsonArr::Pointer>(value_);
+    if (is_array()) {
+        JsonArr* arr = dynamic_cast<JsonArr*>(value_.get());
         return arr->size();
     }
     return 1;
 }
 
 bool Json::find(const std::string& key) const {
-    if (typeid(*(value_)) == typeid(JsonObj)) {
-        JsonObj::Pointer obj = dynamic_cast<JsonObj::Pointer>(value_);
+    assert(!null());
+    if (is_object()) {
+        JsonObj* obj = dynamic_cast<JsonObj*>(value_.get());
         return obj->find(key);
     }
     return false;
 }
 
-int Json::get_int() const {
-    if (typeid(*(value_)) == typeid(JsonNum)) {
-        JsonNum::Pointer num = dynamic_cast<JsonNum::Pointer>(value_);
+double Json::get_double() const {
+    assert(!null());
+    if (is_num()) {
+        JsonNum* num = dynamic_cast<JsonNum*>(value_.get());
         return num->get_value();
+    }
+    return 0.0;
+}
+
+int Json::get_int() const {
+    assert(!null());
+    if (is_num()) {
+        JsonNum* num = dynamic_cast<JsonNum*>(value_.get());
+        return utils::to_int(num->get_value());
     }
     return 0;
 }
 
+bool Json::is_num() const {
+    assert(!null());
+    return typeid(*(value_.get())) == typeid(JsonNum);
+}
+
+bool Json::is_str() const {
+    assert(!null());
+    return typeid(*(value_.get())) == typeid(JsonStr);
+}
+
+bool Json::is_bool() const {
+    assert(!null());
+    return typeid(*(value_.get())) == typeid(JsonBool);
+}
+
+bool Json::is_array() const {
+    assert(!null());
+    return typeid(*(value_.get())) == typeid(JsonArr);
+}
+
+bool Json::is_object() const {
+    assert(!null());
+    return typeid(*(value_.get())) == typeid(JsonObj);
+}
+
 std::string Json::get_str() const {
+    assert(!null());
     std::string result("");
-    if (typeid(*(value_)) == typeid(JsonStr)) {
-        JsonStr::Pointer str = dynamic_cast<JsonStr::Pointer>(value_);
-        const std::string& raw = str->get_value();
-        result = utils::replace_all(raw, "\\\"", "\"");
+    if (is_str()) {
+        JsonStr* str = dynamic_cast<JsonStr*>(value_.get());
+        return str->get_value();
     }
     return result;
 }
 
 bool Json::get_bool() const {
-    if (typeid(*(value_)) == typeid(JsonBool)) {
-        JsonBool::Pointer boolean = dynamic_cast<JsonBool::Pointer>(value_);
+    assert(!null());
+    if (is_bool()) {
+        JsonBool* boolean = dynamic_cast<JsonBool*>(value_.get());
         return boolean->get_value();
     }
     return false;
@@ -146,6 +204,10 @@ bool Json::get_bool() const {
 bool Json::null() const {
     return bool(value_);
 }
+
+
+
+
 
 } //namespace
 

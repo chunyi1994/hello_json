@@ -11,7 +11,7 @@ namespace json {
 class JsonArr : public JsonBase {
 public:
     typedef std::vector<JsonBase::Pointer> ValueVector;
-    typedef JsonArr* Pointer;
+   // typedef JsonArr* Pointer;
 
 public:
     JsonArr(ValueVector vec) : values_(std::move(vec)) {}
@@ -19,20 +19,27 @@ public:
     JsonArr() : values_() {}
 
     virtual ~JsonArr() {
-        for (auto pointer : values_) {
-            delete pointer;
-        }
     }
 
     JsonBase::Pointer at(std::size_t n) { return values_[n];}
 
     std::size_t size() const { return values_.size(); }
 
-    static Pointer create(ValueVector vec) { return new JsonArr(std::move(vec)); }
+    static JsonBase::Pointer create(ValueVector vec) { return std::make_shared<JsonArr>(std::move(vec)); }
 
-    static Pointer create() { return new JsonArr(); }
+    static JsonBase::Pointer create() {  return std::make_shared<JsonArr>(); }
 
     void add_item( JsonBase::Pointer value) { values_.push_back(value); }
+
+    virtual JsonBase::Pointer clone() const {
+        std::vector<JsonBase::Pointer> values;
+        values.reserve(values.size());
+        for (const auto &p: values_) {
+            values.push_back(p->clone());
+        }
+        return create(std::move(values));
+    }
+
 
     //ValueVector& get_vector() { return values_; }
 
