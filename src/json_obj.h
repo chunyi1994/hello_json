@@ -27,7 +27,7 @@ public:
 
     JsonBase::Pointer get(const std::string &key) { return values_[key]; }
 
-    void add_item(std::string key, JsonBase::Pointer value) { values_[key] = value; }
+    void add_item(const std::string& key, JsonBase::Pointer value) { values_[key] = value; }
 
     static JsonBase::Pointer create(JsonObjMap map) { return std::make_shared<JsonObj>(std::move(map)); }
 

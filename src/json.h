@@ -59,6 +59,9 @@ public:
 
     //给object用的，其他类型nullptr
     Pointer get(const std::string& key);
+    int add_item(const std::string& key, Json json);
+    int add_item(const std::string& key, Json::Pointer json);
+
     bool is_object() const;
 
     //将数据结构解析为Json格式的string
@@ -71,6 +74,7 @@ protected:
     void destory();
 private:
     int add_item(JsonBase::Pointer value);
+    int add_item(const std::string& key, JsonBase::Pointer value);
 
 
 private:

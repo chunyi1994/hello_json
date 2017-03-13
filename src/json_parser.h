@@ -73,6 +73,7 @@ static Json create_json(const std::string& json_str) {
                 pos = end - 1;
             }
             break;
+        case 'T':
         case 't':
             assert(!data_stack.empty());
             assert(except_value == EXCEPT_VALUE);
@@ -86,9 +87,9 @@ static Json create_json(const std::string& json_str) {
             data = JsonBool::create(true);
             add_data(data_stack.top(), data, key);
             except_value = EXCEPT_KEY;
-            pos = pos + 3;
+            pos = pos + 5;
             break;
-
+        case 'F':
         case 'f':
             assert(!data_stack.empty());
             assert(json_str.substr(pos, 5) == "false");
@@ -148,7 +149,13 @@ static Json create_json(const std::string& json_str) {
             }
             break;
         case '\\':
-            pos += 2;
+            pos++;
+            if ((pos < len) && (json_str[pos] == 'u' ||  json_str[pos] == 'U')) {
+                pos += 3;
+            } else {
+                ++pos;
+            }
+
             break;
         case '\"':
             size_t pos2 = pos;

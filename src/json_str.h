@@ -17,6 +17,8 @@ public:
         //result = utils::replace_all(result, "\s", "\\s");
         result = utils::replace_all(result, "\n", "\\n");
         result = utils::replace_all(result, "\r", "\\r");
+        result = utils::replace_all(result, "\f", "\\f");
+        result = utils::replace_all(result, "\b", "\\b");
         value_ = result;
     }
 
@@ -31,6 +33,8 @@ public:
         result = utils::replace_all(result, "\\s", " ");
         result = utils::replace_all(result, "\\n", "\n");
         result = utils::replace_all(result, "\\r", "\r");
+        result = utils::replace_all(result, "\\f", "\f");
+        result = utils::replace_all(result, "\\b", "\b");
         return result;
     }
 

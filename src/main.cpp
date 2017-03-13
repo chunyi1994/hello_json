@@ -52,7 +52,7 @@ void example1() {
 int main()
 {
     example1();
-    //do_test();
+    do_test();
     std::cout<<"hello world"<<std::endl;
     return 0;
 }

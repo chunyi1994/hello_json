@@ -122,6 +122,25 @@ Json::Pointer Json::get(const std::string &key) {
     return nullptr;
 }
 
+//如果key存在，会覆盖
+int Json::add_item(const std::string& key,JsonBase::Pointer value) {
+    assert(!null());
+    if (is_object()) {
+        JsonObj* arr = dynamic_cast<JsonObj*>(value_.get());
+        arr->add_item(key, value);
+        return 0;
+    }
+    return -1;
+}
+
+int Json::add_item(const std::string &key, Json json) {
+    return add_item(key, json.value_);
+}
+
+int Json::add_item(const std::string &key, Json::Pointer json) {
+    return add_item(key, json->value_);
+}
+
 std::size_t Json::size() const {
     assert(!null());
     if (is_object()) {
