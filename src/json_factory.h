@@ -4,7 +4,6 @@
 #include <string>
 #include <assert.h>
 #include "json.h"
-#include "json_raii.h"
 #include <utility>
 namespace json{
 

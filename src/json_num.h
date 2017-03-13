@@ -16,7 +16,8 @@ public:
 
     virtual std::string to_string() { return utils::to_str(value_); }
 
-    virtual ~JsonNum() { std::cout<<"~num"<<std::endl;
+    virtual ~JsonNum() {
+        //std::cout<<"~num"<<std::endl;
     }
 
     void set_value(double value) { value_ = value;}
@@ -25,7 +26,7 @@ public:
 
     static JsonBase::Pointer create(double value) { return std::make_shared<JsonNum>(value); }
     virtual JsonBase::Pointer clone() const {
-        std::cout<<"num clone:"<<value_<<std::endl;
+       // std::cout<<"num clone:"<<value_<<std::endl;
         return create(value_);
     }
 

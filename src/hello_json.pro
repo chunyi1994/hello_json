@@ -25,6 +25,5 @@ HEADERS += \
     json_arr.h \
     json_factory.h \
     test/dotest.h \
-    test/test.h \
-    json_raii.h
+    test/test.h
 

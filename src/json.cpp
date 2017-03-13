@@ -1,12 +1,11 @@
 #include "json.h"
 #include "json_type.h"
-#include "json_raii.h"
 #include <iostream>
 #include <assert.h>
 namespace json {
 
 Json::Pointer make_json(Json json) {
-    return std::make_shared<JsonRaii>(json);
+    return std::make_shared<Json>(json);
 }
 
 Json::Pointer create_json_ptr(Json json) {
@@ -57,7 +56,7 @@ Json::Json(JsonBase::Pointer root): value_(root)
 {}
 
 std::string Json::to_string() const {
-    if (null()) {
+    if (!null()) {
         return value_->to_string();
     } else {
         return "null";
@@ -202,7 +201,7 @@ bool Json::get_bool() const {
 }
 
 bool Json::null() const {
-    return bool(value_);
+    return !value_;
 }
 
 

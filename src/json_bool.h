@@ -13,7 +13,8 @@ public:
 
     virtual std::string to_string() { return value_? "true" : "false"; }
 
-    virtual ~JsonBool() { std::cout<<"~bool"<<std::endl;
+    virtual ~JsonBool() {
+        //std::cout<<"~bool"<<std::endl;
     }
 
     void set_value(bool value) { value_ = value;}
@@ -23,7 +24,7 @@ public:
     static JsonBase::Pointer create(bool value) { return std::make_shared<JsonBool>(value); }
 
     virtual JsonBase::Pointer clone() const {
-        std::cout<<"bool clone:"<<value_<<std::endl;
+       // std::cout<<"bool clone:"<<value_<<std::endl;
         return create(value_);
     }
 private:

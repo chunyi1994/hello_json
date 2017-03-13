@@ -20,7 +20,8 @@ public:
         value_ = result;
     }
 
-    virtual ~JsonStr() { std::cout<<"~str"<<std::endl;
+    virtual ~JsonStr() {
+        //std::cout<<"~str"<<std::endl;
     }
 
     std::string get_value() const {
@@ -40,7 +41,7 @@ public:
     static JsonBase::Pointer create(std::string value) { return std::make_shared<JsonStr>(std::move(value)); }
 
     virtual JsonBase::Pointer clone() const {
-        std::cout<<"str clone:"<<value_<<std::endl;
+        //std::cout<<"str clone:"<<value_<<std::endl;
         return create(value_);
     }
 
