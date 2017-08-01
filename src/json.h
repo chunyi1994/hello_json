@@ -24,9 +24,11 @@ public:
     Json(bool value);
     Json(const std::initializer_list<Json>& list);
     virtual ~Json() { destory(); }
+    
     //这里使用std::pair<Key, Json> 是为了适应c++的语法糖 {"key", "value"}
     //如果不引入Key类，会被识别成initializer_list<const char *>
     //引入key类变成{Key("key"), "value"}, 可以被识别成initializer_list<std::pair<Key, Json>
+   
     Json(const std::initializer_list<std::pair<Key, Json>>& list);
     Json(JsonBase::Pointer root);
 
